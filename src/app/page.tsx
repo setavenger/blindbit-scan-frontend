@@ -1,18 +1,15 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { Input, Button } from '@material-tailwind/react';
-
-const baseURL = process.env.NEXT_PUBLIC_BLINDBIT_SCAN_BASE_URL || 'http://umbrel.local:5729';
-// const baseURL = 'http://umbrel.local:5729';
-// const baseURL = 'http://127.0.0.1:8080';
-const scanUsername = process.env.NEXT_PUBLIC_BLINDBIT_SCAN_USER || "blindbit-scan-umbrel";
-const scanPassword = process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PASSWORD || 'mypassword';
-
+import { FiCopy } from 'react-icons/fi';
+import { useConfig } from './context/ConfigContext';
 
 export default function Home() {
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">BlindBit Scan Dashboard</h1>
+      <ConnectionInfo />
       <HeightDisplay />
       <AddressDisplay />
       <UtxoDisplay />
@@ -40,25 +37,25 @@ interface OwnedUtxoJSON {
 }
 
 function HeightDisplay() {
+  const { baseURL, scanUsername, scanPassword } = useConfig();
   const [height, setHeight] = useState<number | null>(null);
 
-  const fetchHeight = () => {
-    fetch(`${baseURL}/height`,{
-      headers: {
-        'Authorization': getBasicAuthHeader(scanUsername, scanPassword),
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setHeight(data.height);
-      })
-      .catch((error) => {
-        console.error('Error fetching height:', error);
-      });
-  };
 
   useEffect(() => {
-    fetchHeight();
+    const fetchHeight = () => {
+      fetch(`${baseURL}/height`,{
+        headers: {
+          'Authorization': getBasicAuthHeader(scanUsername, scanPassword),
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          setHeight(data.height);
+        })
+        .catch((error) => {
+          console.error('Error fetching height:', error);
+        });
+    };
     const interval = setInterval(fetchHeight, 2000); 
     return () => clearInterval(interval);
   }, []);
@@ -72,6 +69,7 @@ function HeightDisplay() {
 }
 
 function AddressDisplay() {
+  const { baseURL, scanUsername, scanPassword } = useConfig();
   const [address, setAddress] = useState<string>('');
 
   const fetchAddress = () => {
@@ -93,7 +91,7 @@ function AddressDisplay() {
     fetchAddress();
     const interval = setInterval(fetchAddress, 60000); 
     return () => clearInterval(interval);
-  }, []);
+  }, [baseURL]);
 
   return (
     <div className="my-4">
@@ -104,6 +102,7 @@ function AddressDisplay() {
 }
 
 function UtxoDisplay() {
+  const { baseURL, scanUsername, scanPassword } = useConfig();
   const [utxos, setUtxos] = useState<OwnedUtxoJSON[]>([]);
 
   const fetchUtxos = () => {
@@ -151,8 +150,7 @@ function UtxoDisplay() {
     fetchUtxos();
     const interval = setInterval(fetchUtxos, 60000);
     return () => clearInterval(interval);
-  }, []);
-
+  }, [baseURL]);
 
   return (
     <div className="my-4">
@@ -186,6 +184,7 @@ function UtxoDisplay() {
       ) : (
         <p>No UTXOs available</p>
       )}
+      {/*@ts-expect-error incomplete props*/}
       <Button
         onClick={downloadUtxos}
         disabled={utxos.length === 0}
@@ -199,6 +198,7 @@ function UtxoDisplay() {
 }
 
 function SetupKeysForm() {
+  const { baseURL, scanUsername, scanPassword } = useConfig();
   const [scanSecret, setScanSecret] = useState('');
   const [spendPublic, setSpendPublic] = useState('');
   const [birthHeight, setBirthHeight] = useState<number>(840000);
@@ -237,18 +237,21 @@ function SetupKeysForm() {
     <div className="my-4">
       <h2 className="text-xl font-bold">Setup New Keys</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/*@ts-expect-error incomplete props*/}
         <Input
           label="Scan Secret"
           value={scanSecret}
           onChange={(e) => setScanSecret(e.target.value)}
           required
         />
+        {/*@ts-expect-error incomplete props*/}
         <Input
           label="Spend Public"
           value={spendPublic}
           onChange={(e) => setSpendPublic(e.target.value)}
           required
         />
+        {/*@ts-expect-error incomplete props*/}
         <Input
           type="number"
           label="Birth Height"
@@ -256,6 +259,7 @@ function SetupKeysForm() {
           onChange={(e) => setBirthHeight(Number(e.target.value))}
           required
         />
+        {/*@ts-expect-error incomplete props*/}
         <Button type="submit" color="blue">
           Submit
         </Button>
@@ -275,3 +279,49 @@ function getBasicAuthHeader(username: string, password: string): string {
   const encodedCredentials = btoa(credentials); // btoa is available in the browser
   return `Basic ${encodedCredentials}`;
 }
+
+function ConnectionInfo() {
+  const { baseURL, scanUsername, scanPassword, torBaseURL, blindbitScanPort } = useConfig();
+  const user = scanUsername;
+  const password = scanPassword;
+
+  return (
+    <div className="my-4">
+      <h2 className="text-xl font-bold">Connection Info</h2>
+      <div className="space-y-4">
+        <CopyField label="Clearnet Address" value={baseURL} />
+        <CopyField label="Tor Address" value={torBaseURL} />
+        <CopyField label="Port" value={`${blindbitScanPort}`} />
+        <CopyField label="User" value={user} />
+        <CopyField label="Password" value={password} />
+      </div>
+    </div>
+  );
+}
+
+function CopyField({ label, value }: { label: string; value: string }) {
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(value).then(
+      () => {
+        alert(`${label} copied to clipboard`);
+      },
+      (err) => {
+        alert('Failed to copy: ' + err);
+      }
+    );
+  };
+
+  return (
+    <div className="flex items-center space-x-2">
+      <div className="flex-1">
+        {/*@ts-expect-error incomplete props*/}
+        <Input label={label} value={value} readOnly />
+      </div>
+      {/*@ts-expect-error incomplete props*/}
+      <Button variant="text" size="sm" onClick={copyToClipboard}>
+        <FiCopy size={20} />
+      </Button>
+    </div>
+  );
+}
+
