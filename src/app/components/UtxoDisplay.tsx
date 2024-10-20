@@ -91,7 +91,7 @@ export function UtxoDisplay() {
       </div>
       {utxos.length > 0 ? (
         <ul>
-          {utxos.filter((utxo) => utxo.utxo_state == 'unspent' || utxo.utxo_state == 'unconfirmed' ).slice(0, fullExpanded ? utxos.length : 5).map((utxo, index) => (
+          {utxos.filter((utxo) => utxo.utxo_state == 'unspent' || utxo.utxo_state == 'unconfirmed' ).sort((a,b) => b.timestamp - a.timestamp).slice(0, fullExpanded ? utxos.length : 5).map((utxo, index) => (
             <li key={index} className="border-b py-2">
               <p>
                 <strong>TxID:</strong> {utxo.txid}

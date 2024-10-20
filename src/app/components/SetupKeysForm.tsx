@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getBasicAuthHeader } from "./utils";
 import { useConfig } from "../context/ConfigContext";
 import { Button, Input } from "@material-tailwind/react";
