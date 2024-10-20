@@ -9,7 +9,7 @@ export interface Config {
   scanUsername: string;
   scanPassword: string;
   torBaseURL: string;
-  blindbitScanPort: number;
+  // blindbitScanPort: number;
 }
 
 // Create the context with a default value of null
@@ -18,7 +18,7 @@ const ConfigContext = createContext<Config>({
   scanUsername: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_USER || 'error: not loaded',
   scanPassword: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PASSWORD || 'error: not loaded',
   torBaseURL: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_TOR_BASE_URL || 'error: not loaded',
-  blindbitScanPort: Number(process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PORT) || 0
+  // blindbitScanPort: Number(process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PORT) || 0
 });
 
 // Define the props for the provider
@@ -49,7 +49,7 @@ export function ConfigProvider({ children }: ConfigProviderProps)  {
           scanUsername: 'error: not loaded',
           scanPassword: 'error: not loaded',
           torBaseURL: 'error: not loaded',
-          blindbitScanPort: 0,
+          // blindbitScanPort: 0,
         });
       } finally {
         setLoading(false);
