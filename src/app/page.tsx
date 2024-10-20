@@ -2,19 +2,23 @@
 import { useState, useEffect } from 'react';
 import { Input, Button } from '@material-tailwind/react';
 import { FiCopy } from 'react-icons/fi';
-import { useConfig } from './context/ConfigContext';
+import { ConfigProvider, useConfig } from './context/ConfigContext';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export default function Home() {
+  noStore(); // Opt into dynamic rendering
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">BlindBit Scan Dashboard</h1>
-      <ConnectionInfo />
-      <HeightDisplay />
-      <AddressDisplay />
-      <UtxoDisplay />
-      <SetupKeysForm />
-    </div>
+    <ConfigProvider>
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">BlindBit Scan Dashboard</h1>
+        <ConnectionInfo />
+        <HeightDisplay />
+        <AddressDisplay />
+        <UtxoDisplay />
+        <SetupKeysForm />
+      </div>
+    </ConfigProvider>
   );
 }
 
@@ -166,7 +170,7 @@ function UtxoDisplay() {
                 <strong>Vout:</strong> {utxo.vout}
               </p>
               <p>
-                <strong>Amount:</strong> {utxo.amount} sats
+                <strong>Amount:</strong> {utxo.amount.toLocaleString(undefined, {maximumFractionDigits: 0})} sats
               </p>
               {utxo.label ? (
                 <>
@@ -285,6 +289,16 @@ function ConnectionInfo() {
   const user = scanUsername;
   const password = scanPassword;
 
+  if (baseURL === "error: not loaded") {
+    console.log("now it's an error")
+  }
+
+  useEffect(()=> {
+    console.log("page_1:", baseURL);
+  }, [baseURL])
+
+  console.log("page:", baseURL);
+
   return (
     <div className="my-4">
       <h2 className="text-xl font-bold">Connection Info</h2>
@@ -301,15 +315,12 @@ function ConnectionInfo() {
 
 function CopyField({ label, value }: { label: string; value: string }) {
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(value).then(
-      () => {
-        alert(`${label} copied to clipboard`);
-      },
-      (err) => {
-        alert('Failed to copy: ' + err);
-      }
-    );
+    navigator.clipboard.writeText(value);
   };
+
+  useEffect(() => {
+    console.log("c-field:", value);
+  }, [value])
 
   return (
     <div className="flex items-center space-x-2">
