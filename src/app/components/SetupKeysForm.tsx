@@ -4,11 +4,16 @@ import { useConfig } from "../context/ConfigContext";
 import { Button, Input } from "@material-tailwind/react";
 
 export function SetupKeysForm() {
-  const { baseURL, scanUsername, scanPassword } = useConfig();
+  const { baseURL, scanUsername, scanPassword, torBaseURL } = useConfig();
   const [scanSecret, setScanSecret] = useState('');
   const [spendPublic, setSpendPublic] = useState('');
   const [birthHeight, setBirthHeight] = useState<number>(840000);
   const [responseMessage, setResponseMessage] = useState<string>('');
+
+  let targetUrl = baseURL;
+  if (window.location.origin.includes(".onion")) {
+    targetUrl = torBaseURL;
+  }
 
   const handleSubmit = () => {
     const scanKey = scanSecret.trim()
@@ -27,7 +32,7 @@ export function SetupKeysForm() {
     const approved = confirm("This will reset BlindBit Scan and trigger a rescan.")
     if (!approved) return;
 
-    fetch(`${baseURL}/new-keys`, {
+    fetch(`${targetUrl}/new-keys`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

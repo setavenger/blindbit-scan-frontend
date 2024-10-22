@@ -4,13 +4,18 @@ import { useConfig } from "../context/ConfigContext";
 
 
 export function HeightDisplay() {
-  const { baseURL, scanUsername, scanPassword } = useConfig();
+  const { baseURL, scanUsername, scanPassword, torBaseURL } = useConfig();
   const [height, setHeight] = useState<number | null>(null);
+
+  let targetUrl = baseURL;
+  if (window.location.origin.includes(".onion")) {
+    targetUrl = torBaseURL;
+  }
 
 
   useEffect(() => {
     const fetchHeight = () => {
-      fetch(`${baseURL}/height`,{
+      fetch(`${targetUrl}/height`,{
         headers: {
           'Authorization': getBasicAuthHeader(scanUsername, scanPassword),
         },

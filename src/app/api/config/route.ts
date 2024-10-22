@@ -6,7 +6,7 @@ export async function GET() {
     scanUsername: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_USER || 'error: not loaded',
     scanPassword: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PASSWORD || 'error: not loaded',
     torBaseURL: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_TOR_BASE_URL || 'error: not loaded',
-    // blindbitScanPort: Number(process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PORT) || 0,
+    port: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PORT || 'error: not loaded',
   };
   
   return Response.json(config);

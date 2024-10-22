@@ -4,19 +4,7 @@ import { Button, Input } from "@material-tailwind/react";
 import { FiCopy } from "react-icons/fi";
 
 export function ConnectionInfo() {
-  const { baseURL, scanUsername, scanPassword, torBaseURL } = useConfig();
-  const user = scanUsername;
-  const password = scanPassword;
-
-  if (baseURL === "error: not loaded") {
-    console.log("now it's an error")
-  }
-
-  useEffect(()=> {
-    console.log("page_1:", baseURL);
-  }, [baseURL])
-
-  console.log("page:", baseURL);
+  const { baseURL, scanUsername, scanPassword, torBaseURL, port } = useConfig();
 
   return (
     <div className="my-4">
@@ -24,9 +12,9 @@ export function ConnectionInfo() {
       <div className="space-y-4">
         <CopyField label="Clearnet Address" value={baseURL} />
         <CopyField label="Tor Address" value={torBaseURL} />
-        {/* <CopyField label="Port" value={`${blindbitScanPort}`} /> */}
-        <CopyField label="User" value={user} />
-        <CopyField label="Password" value={password} />
+        <CopyField label="Port" value={port} />
+        <CopyField label="User" value={scanUsername} />
+        <CopyField label="Password" value={scanPassword} />
       </div>
     </div>
   );

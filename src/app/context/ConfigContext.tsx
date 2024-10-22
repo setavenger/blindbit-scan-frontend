@@ -6,13 +6,15 @@ export interface Config {
   scanUsername: string;
   scanPassword: string;
   torBaseURL: string;
+  port: string;
 }
 
 const ConfigContext = createContext<Config>({
-  baseURL: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_BASE_URL || 'error: not loaded',
-  scanUsername: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_USER || 'error: not loaded',
-  scanPassword: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_PASSWORD || 'error: not loaded',
-  torBaseURL: process.env.NEXT_PUBLIC_BLINDBIT_SCAN_TOR_BASE_URL || 'error: not loaded',
+  baseURL: 'error: not loaded',
+  scanUsername: 'error: not loaded',
+  scanPassword: 'error: not loaded',
+  torBaseURL: 'error: not loaded',
+  port: 'error: not loaded',
 });
 
 interface ConfigProviderProps {
@@ -39,6 +41,7 @@ export function ConfigProvider({ children }: ConfigProviderProps)  {
           scanUsername: 'error: not loaded',
           scanPassword: 'error: not loaded',
           torBaseURL: 'error: not loaded',
+          port: 'error: not loaded',
         });
       } finally {
         setLoading(false);

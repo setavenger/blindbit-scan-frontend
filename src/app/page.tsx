@@ -7,8 +7,8 @@ export default function Home() {
     <ConfigProvider>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">BlindBit Scan Dashboard</h1>
-        <ConnectionInfo />
         <HeightDisplay />
+        <ConnectionInfo />
         <AddressDisplay />
         <UtxoDisplay />
         <SetupKeysForm />

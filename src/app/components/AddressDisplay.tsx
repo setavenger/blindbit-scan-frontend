@@ -3,11 +3,16 @@ import { getBasicAuthHeader } from "./utils";
 import { useConfig } from "../context/ConfigContext";
 
 export function AddressDisplay() {
-  const { baseURL, scanUsername, scanPassword } = useConfig();
+  const { baseURL, scanUsername, scanPassword, torBaseURL } = useConfig();
   const [address, setAddress] = useState<string>('');
 
+  let targetUrl = baseURL;
+  if (window.location.origin.includes(".onion")) {
+    targetUrl = torBaseURL;
+  }
+
   const fetchAddress = () => {
-    fetch(`${baseURL}/address`, {
+    fetch(`${targetUrl}/address`, {
       headers: {
         'Authorization': getBasicAuthHeader(scanUsername, scanPassword),
       },
@@ -25,7 +30,7 @@ export function AddressDisplay() {
     fetchAddress();
     const interval = setInterval(fetchAddress, 60000); 
     return () => clearInterval(interval);
-  }, [baseURL]);
+  }, [targetUrl]);
 
   return (
     <div className="my-4">

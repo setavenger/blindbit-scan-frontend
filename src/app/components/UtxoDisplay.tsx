@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { getBasicAuthHeader } from "./utils";
 import { useConfig } from "../context/ConfigContext";
@@ -23,23 +22,31 @@ interface OwnedUtxoJSON {
 }
 
 export function UtxoDisplay() {
-  const { baseURL, scanUsername, scanPassword } = useConfig();
+  const { baseURL, scanUsername, scanPassword, torBaseURL } = useConfig();
   const [utxos, setUtxos] = useState<OwnedUtxoJSON[]>([]);
   const [fullExpanded, setFullExpanded] = useState(false);
 
-  const fetchUtxos = () => {
-    fetch(`${baseURL}/utxos`, {
-      headers: {
-        'Authorization': getBasicAuthHeader(scanUsername, scanPassword),
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUtxos(data);
+  let targetUrl = baseURL;
+  if (window.location.origin.includes(".onion")) {
+    targetUrl = torBaseURL;
+  }
+
+  const fetchUtxos = async () => {
+    try {
+      const response = await fetch(`${targetUrl}/utxos`, {
+        headers: {
+          'Authorization': getBasicAuthHeader(scanUsername, scanPassword),
+        },
       })
-      .catch((error) => {
-        console.error('Error fetching UTXOs:', error);
-      });
+      if (!response.ok) {
+        console.log(await response.text())
+        throw Error("utxo request failed")
+      }
+      const data =await  response.json()
+      setUtxos(data);
+    } catch (error) {
+      console.error('Error fetching UTXOs:', error);
+    }
   }
 
   const downloadUtxos = () => {
@@ -72,7 +79,7 @@ export function UtxoDisplay() {
     fetchUtxos();
     const interval = setInterval(fetchUtxos, 60000);
     return () => clearInterval(interval);
-  }, [baseURL]);
+  }, [targetUrl]);
 
   return (
     <div className="my-4">
