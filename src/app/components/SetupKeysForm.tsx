@@ -84,7 +84,6 @@ export function SetupKeysForm() {
           onChange={(e) => setBirthHeight(Number(e.target.value))}
           required
         />
-        {/*@ts-expect-error incomplete props*/}
         <Button color="blue" onClick={handleSubmit}>
           Submit
         </Button>

@@ -85,7 +85,6 @@ export function UtxoDisplay() {
     <div className="my-4">
       <div className={"flex flex-row space-x-12"}>
         <h2 className="text-xl font-bold">UTXOs</h2>
-        {/*@ts-expect-error incomplete props*/}
         <Button
           onClick={downloadUtxos}
           size="md"
@@ -125,7 +124,6 @@ export function UtxoDisplay() {
       ) : (
         <p>No UTXOs available</p>
       )}
-      {/*@ts-expect-error incomplete props*/}
       <Button
         onClick={() => setFullExpanded(!fullExpanded)}
         size="md"
